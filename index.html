@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zwift Climb Log</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1114;
+    --surface: #181b20;
+    --surface2: #1f2328;
+    --border: #2a2e35;
+    --text: #e8e6e3;
+    --text-dim: #8b8d90;
+    --accent: #f97316;
+    --accent-glow: rgba(249, 115, 22, 0.15);
+    --strava: #fc4c02;
+    --elev: #22c55e;
+    --watts: #3b82f6;
+    --wkg: #a78bfa;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-body: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.03;
+    background-image:
+      repeating-conic-gradient(var(--text) 0% 25%, transparent 0% 50%) 0 0 / 60px 60px,
+      repeating-conic-gradient(var(--text) 0% 25%, transparent 0% 50%) 30px 30px / 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  header { margin-bottom: 2.5rem; }
+
+  header h1 {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  header h1 span { color: var(--accent); }
+
+  header p {
+    margin-top: 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    font-weight: 300;
+  }
+
+  .summary-bar {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    flex-wrap: wrap;
+  }
+
+  .summary-stat { display: flex; flex-direction: column; }
+
+  .summary-stat .s-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 0.15rem;
+  }
+
+  .summary-stat .s-value {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .search-wrap {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .search-wrap label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  .search-input-wrap { position: relative; }
+
+  .search-input-wrap svg.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--text-dim);
+    pointer-events: none;
+  }
+
+  #climbSearch {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 2.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  #climbSearch:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  #climbSearch::placeholder { color: var(--text-dim); font-weight: 300; }
+
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 360px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .dropdown.open { display: block; }
+
+  .dropdown-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface2);
+    z-index: 1;
+  }
+
+  .dropdown-actions button {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 0.3rem 0.65rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .dropdown-actions button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .dropdown-item {
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.92rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .dropdown-item:last-child { border-bottom: none; }
+
+  .dropdown-item:hover,
+  .dropdown-item.active {
+    background: var(--accent-glow);
+  }
+
+  .dropdown-item .check-box {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .dropdown-item.checked .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .dropdown-item.checked .check-box::after {
+    content: '\2713';
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .dropdown-item .climb-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dropdown-item .climb-name { font-weight: 500; }
+
+  .dropdown-item .climb-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .dropdown-item mark {
+    background: transparent;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .dropdown-empty {
+    padding: 1rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+    min-height: 0;
+  }
+
+  .chips-wrap:empty { margin-bottom: 0; }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.55rem 0.3rem 0.7rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text);
+    animation: chipIn 0.2s ease-out;
+  }
+
+  @keyframes chipIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .chip button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0 0.1rem;
+    transition: color 0.15s;
+    display: flex;
+    align-items: center;
+  }
+
+  .chip button:hover { color: var(--accent); }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .climb-section {
+    margin-bottom: 2.5rem;
+    animation: fadeSlideIn 0.35s ease-out;
+  }
+
+  .climb-section:last-child { margin-bottom: 0; }
+
+  .climb-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .climb-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .climb-portal {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    flex-shrink: 0;
+    margin-top: 0.3rem;
+  }
+
+  .attempts-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+
+  .attempt-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .attempt-card:hover {
+    border-color: rgba(249,115,22,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .attempt-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .attempt-date {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .attempt-seq {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    background: var(--surface2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+  }
+
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+  }
+
+  .metric { text-align: center; }
+
+  .metric-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-value {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .metric-value.time { color: var(--accent); }
+  .metric-value.elev { color: var(--elev); }
+  .metric-value.watts { color: var(--watts); }
+  .metric-value.wkg { color: var(--wkg); }
+  .metric-value.dist { color: var(--text); }
+
+  .metric-unit {
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--text-dim);
+    margin-left: 1px;
+  }
+
+  .strava-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.55rem 1rem;
+    background: rgba(252, 76, 2, 0.1);
+    border: 1px solid rgba(252, 76, 2, 0.25);
+    border-radius: 6px;
+    color: var(--strava);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .strava-link:hover {
+    background: rgba(252, 76, 2, 0.18);
+    border-color: rgba(252, 76, 2, 0.45);
+  }
+
+  .strava-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .best-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(249,115,22,0.15);
+    color: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .elev-bar-wrap {
+    margin-bottom: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .elev-bar-wrap .bar-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 0.6rem;
+  }
+
+  .elev-bar {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .elev-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--elev), #16a34a);
+    transition: width 0.5s ease-out;
+  }
+
+  .elev-bar-text {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+
+  .climb-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 2rem 1rem; }
+    header h1 { font-size: 1.8rem; }
+    .metrics-row { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .summary-bar { gap: 1rem; }
+  }
+
+  .dropdown::-webkit-scrollbar { width: 6px; }
+  .dropdown::-webkit-scrollbar-track { background: transparent; }
+  .dropdown::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Zwift <span>Climb</span> Log</h1>
+    <p>Tracking elevation conquests, one portal at a time.</p>
+  </header>
+
+  <div class="summary-bar" id="summaryBar"></div>
+
+  <div class="search-wrap">
+    <label>Select climbs</label>
+    <div class="search-input-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="climbSearch" placeholder="Type to filter or click to browse…" autocomplete="off" />
+      <div class="dropdown" id="dropdown"></div>
+    </div>
+  </div>
+
+  <div class="chips-wrap" id="chipsWrap"></div>
+
+  <div id="statsPanel"></div>
+</div>
+
+<script>
+const CLIMBS = [
+  {"climb":"Col des Aravis","date":"7/14/23","portal":"F","time":"18:45","watts":229,"seq":1,"elev":919,"dist":3.2},
+  {"climb":"Cote de Domancy","date":"7/15/23","portal":"F","time":"13:55","watts":246,"seq":2,"elev":787,"dist":1.8},
+  {"climb":"Cote de Trebiac","date":"7/22/23","portal":"F","time":"16:28","watts":200,"seq":3,"elev":679,"dist":2.9},
+  {"climb":"Coll d'Ordino","date":"11/5/23","portal":"W","time":"35:18","watts":239,"seq":4,"elev":1677,"dist":6.4},
+  {"climb":"Old La Honda","date":"12/7/23","portal":"F","time":"23:59","watts":258,"seq":5,"elev":1297,"dist":3.5},
+  {"climb":"Col des Aravis","date":"12/14/23","portal":"W","time":"16:23","watts":283,"seq":6,"elev":919,"dist":3.2},
+  {"climb":"Cote de Trebiac","date":"12/25/23","portal":"W","time":"12:45","watts":286,"seq":7,"elev":679,"dist":2.9},
+  {"climb":"Coll d'Ordino","date":"12/28/23","portal":"W","time":"32:44","watts":262,"seq":8,"elev":1677,"dist":6.4},
+  {"climb":"Cote de Pike","date":"2/21/24","portal":"W","time":"10:39","watts":285,"seq":9,"elev":705,"dist":1.3},
+  {"climb":"Cote de Domancy","date":"2/27/24","portal":"W","time":"12:39","watts":285,"seq":10,"elev":787,"dist":1.8},
+  {"climb":"Cipressa","date":"3/5/24","portal":"F","time":"16:19","watts":280,"seq":11,"elev":748,"dist":4.0},
+  {"climb":"Col d'Aspin","date":"3/16/24","portal":"W","time":"54:43","watts":235,"seq":12,"elev":2648,"dist":8.4},
+  {"climb":"Cipressa","date":"3/30/24","portal":"F","time":"16:08","watts":285,"seq":13,"elev":748,"dist":4.0},
+  {"climb":"Col du Rosier","date":"4/11/24","portal":"F","time":"14:09","watts":287,"seq":14,"elev":728,"dist":3.1},
+  {"climb":"Cote de Trebiac","date":"5/22/24","portal":"W","time":"12:46","watts":286,"seq":15,"elev":679,"dist":2.9},
+  {"climb":"Cheddar Gorge","date":"6/3/24","portal":"W","time":"11:41","watts":286,"seq":16,"elev":561,"dist":2.9},
+  {"climb":"Col du Platzerwasel","date":"6/11/24","portal":"W","time":"38:41","watts":232,"seq":17,"elev":1942,"dist":4.9},
+  {"climb":"Cote des Forche","date":"7/1/24","portal":"W","time":"9:12","watts":289,"seq":18,"elev":486,"dist":1.9},
+  {"climb":"Montee du Chinaillon","date":"8/27/24","portal":"F","time":"25:31","watts":246,"seq":19,"elev":1161,"dist":5.0},
+  {"climb":"Cote de Pike","date":"10/12/24","portal":"W","time":"10:01","watts":298,"seq":20,"elev":705,"dist":1.3},
+  {"climb":"La Turbie + Col d'Eze","date":"10/30/24","portal":"W","time":"45:42","watts":242,"seq":21,"elev":2021,"dist":9.4},
+  {"climb":"Col du Galibier (Lautaret)","date":"10/31/24","portal":"W","time":"37:35","watts":241,"seq":22,"elev":1768,"dist":6.4},
+  {"climb":"Old Willunga Hill","date":"11/5/24","portal":"W","time":"14:47","watts":279,"seq":23,"elev":827,"dist":2.5},
+  {"climb":"La Laguna Negra","date":"11/14/24","portal":"W","time":"34:17","watts":248,"seq":24,"elev":1673,"dist":5.6},
+  {"climb":"Col de Peyresourde","date":"12/7/24","portal":"W","time":"34:08","watts":261,"seq":25,"elev":1834,"dist":5.2},
+  {"climb":"Crow Road","date":"1/1/25","portal":"W","time":"18:19","watts":274,"seq":26,"elev":825,"dist":4.3},
+  {"climb":"Trollstigen","date":"1/4/25","portal":"W","time":"52:33","watts":239,"seq":27,"elev":2574,"dist":7.7},
+  {"climb":"Montee du Chinaillon","date":"1/10/25","portal":"W","time":"23:29","watts":271,"seq":28,"elev":1161,"dist":5.0},
+  {"climb":"La Super Planche des Belles Filles","date":"1/29/25","portal":"W","time":"38:12","watts":249,"seq":29,"elev":1978,"dist":5.3},
+  {"climb":"Mt. Fuji","date":"2/1/25","portal":"W","time":"100:17","watts":205,"seq":30,"elev":3965,"dist":15.8},
+  {"climb":"Cheddar Gorge","date":"3/3/25","portal":"W","time":"11:28","watts":298,"seq":31,"elev":561,"dist":2.9},
+  {"climb":"Col du Galibier (Lautaret)","date":"3/6/25","portal":"W","time":"35:29","watts":257,"seq":32,"elev":1768,"dist":6.4},
+  {"climb":"Poggio","date":"3/19/25","portal":"W","time":"9:55","watts":299,"seq":33,"elev":447,"dist":2.7},
+  {"climb":"Old Willunga Hill","date":"5/21/25","portal":"W","time":"14:14","watts":287,"seq":34,"elev":827,"dist":2.5},
+  {"climb":"Mur De Bretagne","date":"7/2/25","portal":"F","time":"7:04","watts":296,"seq":35,"elev":423,"dist":1.2},
+  {"climb":"Col de la Croix Saint-Robert","date":"7/9/25","portal":"F","time":"21:02","watts":266,"seq":36,"elev":1134,"dist":3.6},
+  {"climb":"Mur De Bretagne","date":"7/11/25","portal":"F","time":"6:45","watts":307,"seq":37,"elev":423,"dist":1.2},
+  {"climb":"Old La Honda","date":"9/9/25","portal":"W","time":"23:44","watts":258,"seq":38,"elev":1297,"dist":3.5},
+  {"climb":"Cipressa","date":"10/25/25","portal":"W","time":"16:33","watts":268,"seq":39,"elev":748,"dist":4.0},
+  {"climb":"Old Willunga Hill","date":"12/19/25","portal":"W","time":"14:34","watts":279,"seq":40,"elev":827,"dist":2.5},
+  {"climb":"La Super Planche des Belles Filles","date":"12/24/25","portal":"W","time":"37:24","watts":252,"seq":41,"elev":1978,"dist":5.3},
+  {"climb":"Col de Peyresourde","date":"1/9/26","portal":"W","time":"34:30","watts":256,"seq":42,"elev":1834,"dist":5.2},
+  {"climb":"Pla d'Adet","date":"1/31/26","portal":"W","time":"56:20","watts":233,"seq":43,"elev":2782,"dist":7.5}
+];
+
+const MAX_ELEV = Math.max(...CLIMBS.map(c => c.elev));
+const RIDER_KG = 81.6;
+const uniqueClimbs = [...new Set(CLIMBS.map(c => c.climb))].sort((a, b) => a.localeCompare(b));
+
+let selectedClimbs = new Set();
+
+function timeToSec(t) {
+  const parts = t.split(':').map(Number);
+  if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+  return parts[0]*60 + parts[1];
+}
+
+function stravaLink(dateStr) {
+  const parts = dateStr.split('/');
+  let month = parts[0], day = parts[1], yr = parts[2];
+  let year = parseInt(yr) < 50 ? 2000 + parseInt(yr) : 1900 + parseInt(yr);
+  const m = month.padStart(2, '0');
+  const d = day.padStart(2, '0');
+  return `https://www.strava.com/athlete/calendar#${m}/${d}/${year}`;
+}
+
+function renderSummary() {
+  const total = CLIMBS.length;
+  const unique = uniqueClimbs.length;
+  const totalElev = CLIMBS.reduce((s, c) => s + c.elev, 0);
+  const totalDist = CLIMBS.reduce((s, c) => s + c.dist, 0);
+  document.getElementById('summaryBar').innerHTML = `
+    <div class="summary-stat"><span class="s-label">Total Climbs</span><span class="s-value">${total}</span></div>
+    <div class="summary-stat"><span class="s-label">Unique Climbs</span><span class="s-value">${unique}</span></div>
+    <div class="summary-stat"><span class="s-label">Total Elevation</span><span class="s-value">${totalElev.toLocaleString()}<span style="font-size:0.65rem;color:var(--text-dim)"> ft</span></span></div>
+    <div class="summary-stat"><span class="s-label">Total Distance</span><span class="s-value">${totalDist.toFixed(1)}<span style="font-size:0.65rem;color:var(--text-dim)"> km</span></span></div>
+  `;
+}
+renderSummary();
+
+const searchInput = document.getElementById('climbSearch');
+const dropdown = document.getElementById('dropdown');
+let activeIdx = -1;
+let filteredItems = [];
+
+function highlightMatch(text, query) {
+  if (!query) return text;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return text;
+  return text.slice(0, idx) + '<mark>' + text.slice(idx, idx + query.length) + '</mark>' + text.slice(idx + query.length);
+}
+
+function buildDropdownItems(filter = '') {
+  const lower = filter.toLowerCase();
+  return uniqueClimbs
+    .filter(name => name.toLowerCase().includes(lower))
+    .map(name => {
+      const attempts = CLIMBS.filter(c => c.climb === name);
+      return { name, count: attempts.length, checked: selectedClimbs.has(name) };
+    });
+}
+
+function renderDropdown(filter = '') {
+  filteredItems = buildDropdownItems(filter);
+  activeIdx = -1;
+
+  let html = `<div class="dropdown-actions">
+    <button onmousedown="event.preventDefault(); selectAllVisible()">Select All</button>
+    <button onmousedown="event.preventDefault(); clearAll()">Clear All</button>
+  </div>`;
+
+  if (filteredItems.length === 0) {
+    html += '<div class="dropdown-empty">No matching climbs</div>';
+  } else {
+    html += filteredItems.map((item, i) =>
+      `<div class="dropdown-item${item.checked ? ' checked' : ''}" data-idx="${i}" data-name="${item.name}">
+        <div class="check-box"></div>
+        <div class="climb-info">
+          <span class="climb-name">${highlightMatch(item.name, filter)}</span>
+          <span class="climb-count">${item.count}\u00d7</span>
+        </div>
+      </div>`
+    ).join('');
+  }
+
+  dropdown.innerHTML = html;
+  dropdown.classList.add('open');
+
+  dropdown.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      toggleClimb(el.dataset.name);
+    });
+  });
+}
+
+function toggleClimb(name) {
+  if (selectedClimbs.has(name)) {
+    selectedClimbs.delete(name);
+  } else {
+    selectedClimbs.add(name);
+  }
+  renderDropdown(searchInput.value);
+  renderChips();
+  renderStats();
+}
+
+function selectAllVisible() {
+  const filter = searchInput.value.toLowerCase();
+  uniqueClimbs.forEach(name => {
+    if (name.toLowerCase().includes(filter)) selectedClimbs.add(name);
+  });
+  renderDropdown(searchInput.value);
+  renderChips();
+  renderStats();
+}
+
+function clearAll() {
+  selectedClimbs.clear();
+  renderDropdown(searchInput.value);
+  renderChips();
+  renderStats();
+}
+
+function removeClimb(name) {
+  selectedClimbs.delete(name);
+  renderChips();
+  renderStats();
+  // Update dropdown if open
+  if (dropdown.classList.contains('open')) renderDropdown(searchInput.value);
+}
+
+function renderChips() {
+  const wrap = document.getElementById('chipsWrap');
+  if (selectedClimbs.size === 0) {
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = [...selectedClimbs].sort((a, b) => a.localeCompare(b)).map(name => {
+    const escaped = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    return `<div class="chip">
+      <span>${name}</span>
+      <button onclick="removeClimb('${escaped}')" title="Remove">&times;</button>
+    </div>`;
+  }).join('');
+}
+
+searchInput.addEventListener('focus', () => renderDropdown(searchInput.value));
+searchInput.addEventListener('input', () => renderDropdown(searchInput.value));
+
+document.addEventListener('mousedown', (e) => {
+  if (!e.target.closest('.search-wrap')) {
+    dropdown.classList.remove('open');
+  }
+});
+
+searchInput.addEventListener('keydown', (e) => {
+  const items = dropdown.querySelectorAll('.dropdown-item');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    activeIdx = Math.min(activeIdx + 1, items.length - 1);
+    updateActive(items);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    activeIdx = Math.max(activeIdx - 1, 0);
+    updateActive(items);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (activeIdx >= 0 && items[activeIdx]) {
+      toggleClimb(items[activeIdx].dataset.name);
+    }
+  } else if (e.key === 'Escape') {
+    dropdown.classList.remove('open');
+    searchInput.blur();
+  }
+});
+
+function updateActive(items) {
+  items.forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+  if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: 'nearest' });
+}
+
+function renderStats() {
+  const panel = document.getElementById('statsPanel');
+  if (selectedClimbs.size === 0) {
+    panel.innerHTML = '';
+    return;
+  }
+
+  const portalLabel = { 'F': 'France', 'W': 'Watopia' };
+  const sortedNames = [...selectedClimbs].sort((a, b) => a.localeCompare(b));
+  const stravaSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>';
+
+  let html = '';
+
+  sortedNames.forEach((climbName, ci) => {
+    const attempts = CLIMBS.filter(c => c.climb.toLowerCase() === climbName.toLowerCase())
+      .sort((a, b) => a.seq - b.seq);
+    if (attempts.length === 0) return;
+
+    const first = attempts[0];
+
+    let bestIdx = 0, bestSec = Infinity;
+    attempts.forEach((a, i) => {
+      const s = timeToSec(a.time);
+      if (s < bestSec) { bestSec = s; bestIdx = i; }
+    });
+
+    if (ci > 0) html += '<hr class="climb-divider">';
+
+    html += `<div class="climb-section">
+      <div class="climb-header">
+        <h2>${first.climb}</h2>
+        <span class="climb-portal">${portalLabel[first.portal] || first.portal}</span>
+      </div>
+
+      <div class="elev-bar-wrap">
+        <div class="bar-label">Elevation vs. Mt. Fuji (${MAX_ELEV.toLocaleString()} ft)</div>
+        <div class="elev-bar"><div class="elev-bar-fill" style="width:${(first.elev / MAX_ELEV * 100).toFixed(1)}%"></div></div>
+        <div class="elev-bar-text"><span>${first.elev.toLocaleString()} ft / ${first.dist} km</span><span>${(first.elev / first.dist).toFixed(0)} ft/km avg grade</span></div>
+      </div>
+
+      <div class="attempts-label">${attempts.length} Attempt${attempts.length > 1 ? 's' : ''}</div>`;
+
+    attempts.forEach((a, i) => {
+      const isBest = i === bestIdx && attempts.length > 1;
+      html += `
+        <div class="attempt-card">
+          <div class="attempt-top">
+            <span class="attempt-date">${a.date}${isBest ? '<span class="best-badge">\u26a1 PR</span>' : ''}</span>
+            <span class="attempt-seq">Climb #${a.seq}</span>
+          </div>
+          <div class="metrics-row">
+            <div class="metric">
+              <div class="metric-label">Time</div>
+              <div class="metric-value time">${a.time}</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Power</div>
+              <div class="metric-value watts">${a.watts}<span class="metric-unit">w</span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">W/kg</div>
+              <div class="metric-value wkg">${(a.watts / RIDER_KG).toFixed(2)}</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Elevation</div>
+              <div class="metric-value elev">${a.elev.toLocaleString()}<span class="metric-unit">ft</span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Distance</div>
+              <div class="metric-value dist">${a.dist}<span class="metric-unit">km</span></div>
+            </div>
+          </div>
+          <a class="strava-link" href="${stravaLink(a.date)}" target="_blank" rel="noopener">
+            ${stravaSvg}
+            Find on Strava
+          </a>
+        </div>`;
+    });
+
+    html += '</div>';
+  });
+
+  panel.innerHTML = html;
+}
+</script>
+</body>
+</html>
