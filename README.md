@@ -21,7 +21,26 @@ To host via GitHub Pages, enable Pages in repo settings pointing to the root (`/
 
 ## Data
 
-Source data lives in `climbs.dta` (Stata format). The climb records are embedded directly in `index.html` as a JSON array for zero-dependency operation. When adding new climbs, update both the `.dta` file and the `CLIMBS` array in `index.html`.
+Source data lives in `climbs.dta` (Stata format). The climb records are embedded directly in `index.html` as a JSON array for zero-dependency operation.
+
+### Adding New Climbs
+
+1. Add the new climb to `climbs.dta` in Stata
+2. Run the sync script:
+
+```bash
+python update_climbs.py
+```
+
+3. Commit and push:
+
+```bash
+git add .
+git commit -m "Add Climb Name"
+git push
+```
+
+The script reads `climbs.dta` and updates the `CLIMBS` array in `index.html` automatically. Requires `pandas` (`pip install pandas`).
 
 ### Fields
 
