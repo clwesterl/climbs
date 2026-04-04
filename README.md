@@ -2,8 +2,6 @@
 
 A self-contained web app for tracking completed Zwift climb portal rides. Select one or multiple climbs from a searchable dropdown to view attempt history, power data, and link out to Strava.
 
-![Screenshot](screenshot.png)
-
 ## Features
 
 - **Multi-select searchable dropdown** — type to filter, check multiple climbs, keyboard navigable
@@ -17,13 +15,9 @@ A self-contained web app for tracking completed Zwift climb portal rides. Select
 
 Open `index.html` in any browser. No build step, no dependencies, no server required.
 
-To host via GitHub Pages, enable Pages in repo settings pointing to the root (`/`) of the `main` branch, then visit `https://<username>.github.io/climbs/`.
+To host via GitHub Pages, enable Pages in repo settings pointing to the root (`/`) of the `main` branch, then visit `https://clwesterl.github.io/climbs/`.
 
-## Data
-
-Source data lives in `climbs.dta` (Stata format). The climb records are embedded directly in `index.html` as a JSON array for zero-dependency operation.
-
-### Adding New Climbs
+## Adding New Climbs
 
 1. Add the new climb to `climbs.dta` in Stata
 2. Run the sync script:
@@ -42,6 +36,10 @@ git push
 
 The script reads `climbs.dta` and updates the `CLIMBS` array in `index.html` automatically. Requires `pandas` (`pip install pandas`).
 
+## Data
+
+Source of truth is `climbs.dta` (Stata format). The climb records are embedded in `index.html` as a JSON array for zero-dependency operation. Always edit the `.dta` file first, then run `update_climbs.py` to sync.
+
 ### Fields
 
 | Field | Type | Description |
@@ -57,10 +55,26 @@ The script reads `climbs.dta` and updates the `CLIMBS` array in `index.html` aut
 
 ## Configuration
 
-Rider weight for W/kg calculation is set in `index.html`:
+Rider weight for W/kg uses a split based on when the weight changed:
 
 ```javascript
-const RIDER_KG = 81.6;
+const RIDER_KG_OLD = 81.6;       // seq 1–43
+const RIDER_KG_NEW = 80.3;       // seq 44+
+const WEIGHT_CHANGE_SEQ = 44;
+```
+
+To update the cutoff or weights, edit these constants in `index.html`.
+
+## File Structure
+
+```
+climbs/
+├── index.html          # The app (self-contained HTML/CSS/JS)
+├── climbs.dta          # Source data (Stata format)
+├── update_climbs.py    # Sync script: .dta → index.html
+├── CLAUDE.md           # Project context for Claude Code
+├── .gitignore
+└── README.md
 ```
 
 ## License
