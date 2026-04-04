@@ -569,7 +569,7 @@ const CLIMBS = [
   {"climb":"Col des Aravis","date":"12/14/23","portal":"W","time":"16:23","watts":283,"seq":6,"elev":919,"dist":3.2},
   {"climb":"Cote de Trebiac","date":"12/25/23","portal":"W","time":"12:45","watts":286,"seq":7,"elev":679,"dist":2.9},
   {"climb":"Coll d'Ordino","date":"12/28/23","portal":"W","time":"32:44","watts":262,"seq":8,"elev":1677,"dist":6.4},
-  {"climb":"Cote de Pike","date":"2/21/24","portal":"W","time":"10:39","watts":285,"seq":9,"elev":705,"dist":1.3},
+  {"climb":"Cote de Pike","date":"2/21/24","portal":"W","time":"10:39","watts":285,"seq":9,"elev":709,"dist":1.4},
   {"climb":"Cote de Domancy","date":"2/27/24","portal":"W","time":"12:39","watts":285,"seq":10,"elev":787,"dist":1.8},
   {"climb":"Cipressa","date":"3/5/24","portal":"F","time":"16:19","watts":280,"seq":11,"elev":748,"dist":4.0},
   {"climb":"Col d'Aspin","date":"3/16/24","portal":"W","time":"54:43","watts":235,"seq":12,"elev":2648,"dist":8.4},
@@ -577,10 +577,10 @@ const CLIMBS = [
   {"climb":"Col du Rosier","date":"4/11/24","portal":"F","time":"14:09","watts":287,"seq":14,"elev":728,"dist":3.1},
   {"climb":"Cote de Trebiac","date":"5/22/24","portal":"W","time":"12:46","watts":286,"seq":15,"elev":679,"dist":2.9},
   {"climb":"Cheddar Gorge","date":"6/3/24","portal":"W","time":"11:41","watts":286,"seq":16,"elev":561,"dist":2.9},
-  {"climb":"Col du Platzerwasel","date":"6/11/24","portal":"W","time":"38:41","watts":232,"seq":17,"elev":1942,"dist":4.9},
+  {"climb":"Col du Platzerwasel","date":"6/11/24","portal":"W","time":"38:41","watts":232,"seq":17,"elev":1959,"dist":4.9},
   {"climb":"Cote des Forche","date":"7/1/24","portal":"W","time":"9:12","watts":289,"seq":18,"elev":486,"dist":1.9},
   {"climb":"Montee du Chinaillon","date":"8/27/24","portal":"F","time":"25:31","watts":246,"seq":19,"elev":1161,"dist":5.0},
-  {"climb":"Cote de Pike","date":"10/12/24","portal":"W","time":"10:01","watts":298,"seq":20,"elev":705,"dist":1.3},
+  {"climb":"Cote de Pike","date":"10/12/24","portal":"W","time":"10:01","watts":298,"seq":20,"elev":709,"dist":1.4},
   {"climb":"La Turbie + Col d'Eze","date":"10/30/24","portal":"W","time":"45:42","watts":242,"seq":21,"elev":2021,"dist":9.4},
   {"climb":"Col du Galibier (Lautaret)","date":"10/31/24","portal":"W","time":"37:35","watts":241,"seq":22,"elev":1768,"dist":6.4},
   {"climb":"Old Willunga Hill","date":"11/5/24","portal":"W","time":"14:47","watts":279,"seq":23,"elev":827,"dist":2.5},
@@ -603,11 +603,16 @@ const CLIMBS = [
   {"climb":"Old Willunga Hill","date":"12/19/25","portal":"W","time":"14:34","watts":279,"seq":40,"elev":827,"dist":2.5},
   {"climb":"La Super Planche des Belles Filles","date":"12/24/25","portal":"W","time":"37:24","watts":252,"seq":41,"elev":1978,"dist":5.3},
   {"climb":"Col de Peyresourde","date":"1/9/26","portal":"W","time":"34:30","watts":256,"seq":42,"elev":1834,"dist":5.2},
-  {"climb":"Pla d'Adet","date":"1/31/26","portal":"W","time":"56:20","watts":233,"seq":43,"elev":2782,"dist":7.5}
+  {"climb":"Pla d'Adet","date":"1/31/26","portal":"W","time":"56:20","watts":233,"seq":43,"elev":2782,"dist":7.5},
+  {"climb":"Cote de Pike","date":"2/26/26","portal":"W","time":"10:34","watts":285,"seq":44,"elev":709,"dist":1.4},
+  {"climb":"Col du Platzerwasel","date":"3/10/26","portal":"W","time":"36:46","watts":238,"seq":45,"elev":1959,"dist":4.9}
 ];
 
 const MAX_ELEV = Math.max(...CLIMBS.map(c => c.elev));
-const RIDER_KG = 81.6;
+const RIDER_KG_OLD = 81.6;
+const RIDER_KG_NEW = 80.3;
+const WEIGHT_CHANGE_SEQ = 44; // seq 44+ uses new weight
+function riderKg(seq) { return seq >= WEIGHT_CHANGE_SEQ ? RIDER_KG_NEW : RIDER_KG_OLD; }
 const uniqueClimbs = [...new Set(CLIMBS.map(c => c.climb))].sort((a, b) => a.localeCompare(b));
 
 let selectedClimbs = new Set();
@@ -844,7 +849,7 @@ function renderStats() {
             </div>
             <div class="metric">
               <div class="metric-label">W/kg</div>
-              <div class="metric-value wkg">${(a.watts / RIDER_KG).toFixed(2)}</div>
+              <div class="metric-value wkg">${(a.watts / riderKg(a.seq)).toFixed(2)}</div>
             </div>
             <div class="metric">
               <div class="metric-label">Elevation</div>
