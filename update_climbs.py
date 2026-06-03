@@ -46,7 +46,8 @@ def main():
             "watts": int(row["watts"]),
             "seq": int(row["seq"]),
             "elev": int(row["elev"]),
-            "dist": round(float(row["dist"]), 1)
+            "dist": round(float(row["dist"]), 1),
+            "ft_mile": round(float(row["ft_mile"]), 1)
         })
 
     # Format as indented JS array
