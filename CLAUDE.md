@@ -15,11 +15,14 @@ A single-file web app (`index.html`) for browsing Zwift climb portal completions
 - **No framework.** Vanilla HTML/CSS/JS. The app is small enough that a framework adds complexity without benefit.
 - **Data embedded in HTML.** Avoids needing a server or fetch calls. The tradeoff is the sync script, but the workflow is simple.
 - **Multi-select dropdown.** Users can view one or many climbs at once. Dropdown stays open on selection, chips show selected climbs above results.
-- **Split rider weight.** W/kg calculation uses `riderKg(seq)` function — seq 1–43 at 81.6 kg, seq 44+ at 80.3 kg. Constants are `RIDER_KG_OLD`, `RIDER_KG_NEW`, and `WEIGHT_CHANGE_SEQ`.
+- **Split rider weight.** W/kg calculation uses `riderKg(seq)` function — seq 1–43 at 81.6 kg, seq 44+ at 80.3 kg (177 lbs). Constants are `RIDER_KG_OLD`, `RIDER_KG_NEW`, and `WEIGHT_CHANGE_SEQ`.
+- **Derived metrics calculated in JS.** Ft/mile (`elev / dist`) and W/kg (`watts / riderKg(seq)`) are computed at render time, not stored in the data. This avoids redundancy and keeps the sync script simple.
 
 ## Data Schema
 
-Each climb record has: `climb` (string), `date` (string, M/D/YY), `portal` (F=France, W=Watopia), `time` (string, MM:SS or H:MM:SS), `watts` (int), `seq` (int, chronological order), `elev` (int, feet), `dist` (float, km).
+Each climb record synced from Stata has: `climb` (string), `date` (string, M/D/YY), `portal` (F=France, W=Watopia), `time` (string, MM:SS or H:MM:SS), `watts` (int), `seq` (int, chronological order), `elev` (int, feet), `dist` (float, miles).
+
+The Stata file may contain additional columns (e.g. `ft_mile`) — the sync script ignores any columns not in the schema above.
 
 ## Strava Links
 
@@ -27,7 +30,15 @@ Each attempt links to `https://www.strava.com/athlete/calendar#MM/DD/YYYY` — t
 
 ## Styling
 
-Dark theme. Fonts: DM Serif Display (headings), IBM Plex Mono (data/labels), IBM Plex Sans (body). Accent color: `#f97316` (orange). Color-coded metrics: orange for time, blue for watts, purple for W/kg, green for elevation.
+Dark theme. Fonts: DM Serif Display (headings), IBM Plex Mono (data/labels), IBM Plex Sans (body). Loaded from Google Fonts CDN.
+
+Color-coded metrics:
+- Orange (`#f97316`) — accent color, time values
+- Blue (`#3b82f6`) — watts
+- Purple (`#a78bfa`) — W/kg
+- Green (`#22c55e`) — elevation
+- Yellow (`#facc15`) — ft/mile
+- Strava orange (`#fc4c02`) — Strava links
 
 ## Common Tasks
 

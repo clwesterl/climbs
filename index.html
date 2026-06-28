@@ -563,55 +563,59 @@
 
 <script>
 const CLIMBS = [
-  {"climb": "Col des Aravis", "date": "7/14/23", "portal": "F", "time": "18:45", "watts": 229, "seq": 1, "elev": 919, "dist": 3.2, "ft_mile": 287.2},
-  {"climb": "Cote de Domancy", "date": "7/15/23", "portal": "F", "time": "13:55", "watts": 246, "seq": 2, "elev": 787, "dist": 1.8, "ft_mile": 437.2},
-  {"climb": "Cote de Trebiac", "date": "7/22/23", "portal": "F", "time": "16:28", "watts": 200, "seq": 3, "elev": 679, "dist": 2.9, "ft_mile": 234.1},
-  {"climb": "Coll d'Ordino", "date": "11/5/23", "portal": "W", "time": "35:18", "watts": 239, "seq": 4, "elev": 1677, "dist": 6.4, "ft_mile": 262.0},
-  {"climb": "Old La Honda", "date": "12/7/23", "portal": "F", "time": "23:59", "watts": 258, "seq": 5, "elev": 1297, "dist": 3.5, "ft_mile": 370.6},
-  {"climb": "Col des Aravis", "date": "12/14/23", "portal": "W", "time": "16:23", "watts": 283, "seq": 6, "elev": 919, "dist": 3.2, "ft_mile": 287.2},
-  {"climb": "Cote de Trebiac", "date": "12/25/23", "portal": "W", "time": "12:45", "watts": 286, "seq": 7, "elev": 679, "dist": 2.9, "ft_mile": 234.1},
-  {"climb": "Coll d'Ordino", "date": "12/28/23", "portal": "W", "time": "32:44", "watts": 262, "seq": 8, "elev": 1677, "dist": 6.4, "ft_mile": 262.0},
-  {"climb": "Cote de Pike", "date": "2/21/24", "portal": "W", "time": "10:39", "watts": 285, "seq": 9, "elev": 709, "dist": 1.4, "ft_mile": 506.4},
-  {"climb": "Cote de Domancy", "date": "2/27/24", "portal": "W", "time": "12:39", "watts": 285, "seq": 10, "elev": 787, "dist": 1.8, "ft_mile": 437.2},
-  {"climb": "Cipressa", "date": "3/5/24", "portal": "F", "time": "16:19", "watts": 280, "seq": 11, "elev": 748, "dist": 4.0, "ft_mile": 187.0},
-  {"climb": "Col d'Aspin", "date": "3/16/24", "portal": "W", "time": "54:43", "watts": 235, "seq": 12, "elev": 2648, "dist": 8.4, "ft_mile": 315.2},
-  {"climb": "Cipressa", "date": "3/30/24", "portal": "F", "time": "16:08", "watts": 285, "seq": 13, "elev": 748, "dist": 4.0, "ft_mile": 187.0},
-  {"climb": "Col du Rosier", "date": "4/11/24", "portal": "F", "time": "14:09", "watts": 287, "seq": 14, "elev": 728, "dist": 3.1, "ft_mile": 234.8},
-  {"climb": "Cote de Trebiac", "date": "5/22/24", "portal": "W", "time": "12:46", "watts": 286, "seq": 15, "elev": 679, "dist": 2.9, "ft_mile": 234.1},
-  {"climb": "Cheddar Gorge", "date": "6/3/24", "portal": "W", "time": "11:41", "watts": 286, "seq": 16, "elev": 561, "dist": 2.9, "ft_mile": 193.4},
-  {"climb": "Col du Platzerwasel", "date": "6/11/24", "portal": "W", "time": "38:41", "watts": 232, "seq": 17, "elev": 1959, "dist": 4.9, "ft_mile": 399.8},
-  {"climb": "Cote des Forche", "date": "7/1/24", "portal": "W", "time": "9:12", "watts": 289, "seq": 18, "elev": 486, "dist": 1.9, "ft_mile": 255.8},
-  {"climb": "Montee du Chinaillon", "date": "8/27/24", "portal": "F", "time": "25:31", "watts": 246, "seq": 19, "elev": 1161, "dist": 5.0, "ft_mile": 232.2},
-  {"climb": "Cote de Pike", "date": "10/12/24", "portal": "W", "time": "10:01", "watts": 298, "seq": 20, "elev": 709, "dist": 1.4, "ft_mile": 506.4},
-  {"climb": "La Turbie + Col d'Eze", "date": "10/30/24", "portal": "W", "time": "45:42", "watts": 242, "seq": 21, "elev": 2021, "dist": 9.4, "ft_mile": 215.0},
-  {"climb": "Col du Galibier (Lautaret)", "date": "10/31/24", "portal": "W", "time": "37:35", "watts": 241, "seq": 22, "elev": 1768, "dist": 6.4, "ft_mile": 276.2},
-  {"climb": "Old Willunga Hill", "date": "11/5/24", "portal": "W", "time": "14:47", "watts": 279, "seq": 23, "elev": 827, "dist": 2.5, "ft_mile": 330.8},
-  {"climb": "La Laguna Negra", "date": "11/14/24", "portal": "W", "time": "34:17", "watts": 248, "seq": 24, "elev": 1673, "dist": 5.6, "ft_mile": 298.8},
-  {"climb": "Col de Peyresourde", "date": "12/7/24", "portal": "W", "time": "34:08", "watts": 261, "seq": 25, "elev": 1834, "dist": 5.2, "ft_mile": 352.7},
-  {"climb": "Crow Road", "date": "1/1/25", "portal": "W", "time": "18:19", "watts": 274, "seq": 26, "elev": 825, "dist": 4.3, "ft_mile": 191.9},
-  {"climb": "Trollstigen", "date": "1/4/25", "portal": "W", "time": "52:33", "watts": 239, "seq": 27, "elev": 2574, "dist": 7.7, "ft_mile": 334.3},
-  {"climb": "Montee du Chinaillon", "date": "1/10/25", "portal": "W", "time": "23:29", "watts": 271, "seq": 28, "elev": 1161, "dist": 5.0, "ft_mile": 232.2},
-  {"climb": "La Super Planche des Belles Filles", "date": "1/29/25", "portal": "W", "time": "38:12", "watts": 249, "seq": 29, "elev": 1978, "dist": 5.3, "ft_mile": 373.2},
-  {"climb": "Mt. Fuji", "date": "2/1/25", "portal": "W", "time": "100:17", "watts": 205, "seq": 30, "elev": 3965, "dist": 15.8, "ft_mile": 250.9},
-  {"climb": "Cheddar Gorge", "date": "3/3/25", "portal": "W", "time": "11:28", "watts": 298, "seq": 31, "elev": 561, "dist": 2.9, "ft_mile": 193.4},
-  {"climb": "Col du Galibier (Lautaret)", "date": "3/6/25", "portal": "W", "time": "35:29", "watts": 257, "seq": 32, "elev": 1768, "dist": 6.4, "ft_mile": 276.2},
-  {"climb": "Poggio", "date": "3/19/25", "portal": "W", "time": "9:55", "watts": 299, "seq": 33, "elev": 447, "dist": 2.7, "ft_mile": 165.6},
-  {"climb": "Old Willunga Hill", "date": "5/21/25", "portal": "W", "time": "14:14", "watts": 287, "seq": 34, "elev": 827, "dist": 2.5, "ft_mile": 330.8},
-  {"climb": "Mur De Bretagne", "date": "7/2/25", "portal": "F", "time": "7:04", "watts": 296, "seq": 35, "elev": 423, "dist": 1.2, "ft_mile": 352.5},
-  {"climb": "Col de la Croix Saint-Robert", "date": "7/9/25", "portal": "F", "time": "21:02", "watts": 266, "seq": 36, "elev": 1134, "dist": 3.6, "ft_mile": 315.0},
-  {"climb": "Mur De Bretagne", "date": "7/11/25", "portal": "F", "time": "6:45", "watts": 307, "seq": 37, "elev": 423, "dist": 1.2, "ft_mile": 352.5},
-  {"climb": "Old La Honda", "date": "9/9/25", "portal": "W", "time": "23:44", "watts": 258, "seq": 38, "elev": 1297, "dist": 3.5, "ft_mile": 370.6},
-  {"climb": "Cipressa", "date": "10/25/25", "portal": "W", "time": "16:33", "watts": 268, "seq": 39, "elev": 748, "dist": 4.0, "ft_mile": 187.0},
-  {"climb": "Old Willunga Hill", "date": "12/19/25", "portal": "W", "time": "14:34", "watts": 279, "seq": 40, "elev": 827, "dist": 2.5, "ft_mile": 330.8},
-  {"climb": "La Super Planche des Belles Filles", "date": "12/24/25", "portal": "W", "time": "37:24", "watts": 252, "seq": 41, "elev": 1978, "dist": 5.3, "ft_mile": 373.2},
-  {"climb": "Col de Peyresourde", "date": "1/9/26", "portal": "W", "time": "34:30", "watts": 256, "seq": 42, "elev": 1834, "dist": 5.2, "ft_mile": 352.7},
-  {"climb": "Pla d'Adet", "date": "1/31/26", "portal": "W", "time": "56:20", "watts": 233, "seq": 43, "elev": 2782, "dist": 7.5, "ft_mile": 370.9},
-  {"climb": "Cote de Pike", "date": "2/26/26", "portal": "W", "time": "10:34", "watts": 285, "seq": 44, "elev": 709, "dist": 1.4, "ft_mile": 506.4},
-  {"climb": "Col du Platzerwasel", "date": "3/10/26", "portal": "W", "time": "36:46", "watts": 238, "seq": 45, "elev": 1959, "dist": 4.9, "ft_mile": 399.8},
-  {"climb": "Pas de Peyrol / Puy Mary", "date": "4/15/26", "portal": "W", "time": "42:47", "watts": 223, "seq": 46, "elev": 1978, "dist": 6.4, "ft_mile": 309.1},
-  {"climb": "Rocacorba", "date": "5/23/26", "portal": "W", "time": "53:59", "watts": 217, "seq": 47, "elev": 2480, "dist": 7.4, "ft_mile": 335.1},
-  {"climb": "Montee du Chinaillon", "date": "5/29/26", "portal": "W", "time": "24:55", "watts": 246, "seq": 48, "elev": 1161, "dist": 5.0, "ft_mile": 232.2},
-  {"climb": "Norton Summit", "date": "6/2/26", "portal": "W", "time": "24:49", "watts": 256, "seq": 49, "elev": 1194, "dist": 5.4, "ft_mile": 221.1}
+  {"climb": "Col des Aravis", "date": "7/14/23", "portal": "F", "time": "18:45", "watts": 229, "seq": 1, "elev": 919, "dist": 3.2},
+  {"climb": "Cote de Domancy", "date": "7/15/23", "portal": "F", "time": "13:55", "watts": 246, "seq": 2, "elev": 787, "dist": 1.8},
+  {"climb": "Cote de Trebiac", "date": "7/22/23", "portal": "F", "time": "16:28", "watts": 200, "seq": 3, "elev": 679, "dist": 2.9},
+  {"climb": "Coll d'Ordino", "date": "11/5/23", "portal": "W", "time": "35:18", "watts": 239, "seq": 4, "elev": 1677, "dist": 6.4},
+  {"climb": "Old La Honda", "date": "12/7/23", "portal": "F", "time": "23:59", "watts": 258, "seq": 5, "elev": 1297, "dist": 3.5},
+  {"climb": "Col des Aravis", "date": "12/14/23", "portal": "W", "time": "16:23", "watts": 283, "seq": 6, "elev": 919, "dist": 3.2},
+  {"climb": "Cote de Trebiac", "date": "12/25/23", "portal": "W", "time": "12:45", "watts": 286, "seq": 7, "elev": 679, "dist": 2.9},
+  {"climb": "Coll d'Ordino", "date": "12/28/23", "portal": "W", "time": "32:44", "watts": 262, "seq": 8, "elev": 1677, "dist": 6.4},
+  {"climb": "Cote de Pike", "date": "2/21/24", "portal": "W", "time": "10:39", "watts": 285, "seq": 9, "elev": 709, "dist": 1.4},
+  {"climb": "Cote de Domancy", "date": "2/27/24", "portal": "W", "time": "12:39", "watts": 285, "seq": 10, "elev": 787, "dist": 1.8},
+  {"climb": "Cipressa", "date": "3/5/24", "portal": "F", "time": "16:19", "watts": 280, "seq": 11, "elev": 748, "dist": 4.0},
+  {"climb": "Col d'Aspin", "date": "3/16/24", "portal": "W", "time": "54:43", "watts": 235, "seq": 12, "elev": 2648, "dist": 8.4},
+  {"climb": "Cipressa", "date": "3/30/24", "portal": "F", "time": "16:08", "watts": 285, "seq": 13, "elev": 748, "dist": 4.0},
+  {"climb": "Col du Rosier", "date": "4/11/24", "portal": "F", "time": "14:09", "watts": 287, "seq": 14, "elev": 728, "dist": 3.1},
+  {"climb": "Cote de Trebiac", "date": "5/22/24", "portal": "W", "time": "12:46", "watts": 286, "seq": 15, "elev": 679, "dist": 2.9},
+  {"climb": "Cheddar Gorge", "date": "6/3/24", "portal": "W", "time": "11:41", "watts": 286, "seq": 16, "elev": 561, "dist": 2.9},
+  {"climb": "Col du Platzerwasel", "date": "6/11/24", "portal": "W", "time": "38:41", "watts": 232, "seq": 17, "elev": 1959, "dist": 4.9},
+  {"climb": "Cote des Forche", "date": "7/1/24", "portal": "W", "time": "9:12", "watts": 289, "seq": 18, "elev": 486, "dist": 1.9},
+  {"climb": "Montee du Chinaillon", "date": "8/27/24", "portal": "F", "time": "25:31", "watts": 246, "seq": 19, "elev": 1161, "dist": 5.0},
+  {"climb": "Cote de Pike", "date": "10/12/24", "portal": "W", "time": "10:01", "watts": 298, "seq": 20, "elev": 709, "dist": 1.4},
+  {"climb": "La Turbie + Col d'Eze", "date": "10/30/24", "portal": "W", "time": "45:42", "watts": 242, "seq": 21, "elev": 2021, "dist": 9.4},
+  {"climb": "Col du Galibier (Lautaret)", "date": "10/31/24", "portal": "W", "time": "37:35", "watts": 241, "seq": 22, "elev": 1768, "dist": 6.4},
+  {"climb": "Old Willunga Hill", "date": "11/5/24", "portal": "W", "time": "14:47", "watts": 279, "seq": 23, "elev": 827, "dist": 2.5},
+  {"climb": "La Laguna Negra", "date": "11/14/24", "portal": "W", "time": "34:17", "watts": 248, "seq": 24, "elev": 1673, "dist": 5.6},
+  {"climb": "Col de Peyresourde", "date": "12/7/24", "portal": "W", "time": "34:08", "watts": 261, "seq": 25, "elev": 1834, "dist": 5.2},
+  {"climb": "Crow Road", "date": "1/1/25", "portal": "W", "time": "18:19", "watts": 274, "seq": 26, "elev": 825, "dist": 4.3},
+  {"climb": "Trollstigen", "date": "1/4/25", "portal": "W", "time": "52:33", "watts": 239, "seq": 27, "elev": 2574, "dist": 7.7},
+  {"climb": "Montee du Chinaillon", "date": "1/10/25", "portal": "W", "time": "23:29", "watts": 271, "seq": 28, "elev": 1161, "dist": 5.0},
+  {"climb": "La Super Planche des Belles Filles", "date": "1/29/25", "portal": "W", "time": "38:12", "watts": 249, "seq": 29, "elev": 1978, "dist": 5.3},
+  {"climb": "Mt. Fuji", "date": "2/1/25", "portal": "W", "time": "100:17", "watts": 205, "seq": 30, "elev": 3965, "dist": 15.8},
+  {"climb": "Cheddar Gorge", "date": "3/3/25", "portal": "W", "time": "11:28", "watts": 298, "seq": 31, "elev": 561, "dist": 2.9},
+  {"climb": "Col du Galibier (Lautaret)", "date": "3/6/25", "portal": "W", "time": "35:29", "watts": 257, "seq": 32, "elev": 1768, "dist": 6.4},
+  {"climb": "Poggio", "date": "3/19/25", "portal": "W", "time": "9:55", "watts": 299, "seq": 33, "elev": 447, "dist": 2.7},
+  {"climb": "Old Willunga Hill", "date": "5/21/25", "portal": "W", "time": "14:14", "watts": 287, "seq": 34, "elev": 827, "dist": 2.5},
+  {"climb": "Mur De Bretagne", "date": "7/2/25", "portal": "F", "time": "7:04", "watts": 296, "seq": 35, "elev": 423, "dist": 1.2},
+  {"climb": "Col de la Croix Saint-Robert", "date": "7/9/25", "portal": "F", "time": "21:02", "watts": 266, "seq": 36, "elev": 1134, "dist": 3.6},
+  {"climb": "Mur De Bretagne", "date": "7/11/25", "portal": "F", "time": "6:45", "watts": 307, "seq": 37, "elev": 423, "dist": 1.2},
+  {"climb": "Old La Honda", "date": "9/9/25", "portal": "W", "time": "23:44", "watts": 258, "seq": 38, "elev": 1297, "dist": 3.5},
+  {"climb": "Cipressa", "date": "10/25/25", "portal": "W", "time": "16:33", "watts": 268, "seq": 39, "elev": 748, "dist": 4.0},
+  {"climb": "Old Willunga Hill", "date": "12/19/25", "portal": "W", "time": "14:34", "watts": 279, "seq": 40, "elev": 827, "dist": 2.5},
+  {"climb": "La Super Planche des Belles Filles", "date": "12/24/25", "portal": "W", "time": "37:24", "watts": 252, "seq": 41, "elev": 1978, "dist": 5.3},
+  {"climb": "Col de Peyresourde", "date": "1/9/26", "portal": "W", "time": "34:30", "watts": 256, "seq": 42, "elev": 1834, "dist": 5.2},
+  {"climb": "Pla d'Adet", "date": "1/31/26", "portal": "W", "time": "56:20", "watts": 233, "seq": 43, "elev": 2782, "dist": 7.5},
+  {"climb": "Cote de Pike", "date": "2/26/26", "portal": "W", "time": "10:34", "watts": 285, "seq": 44, "elev": 709, "dist": 1.4},
+  {"climb": "Col du Platzerwasel", "date": "3/10/26", "portal": "W", "time": "36:46", "watts": 238, "seq": 45, "elev": 1959, "dist": 4.9},
+  {"climb": "Pas de Peyrol / Puy Mary", "date": "4/15/26", "portal": "W", "time": "42:47", "watts": 223, "seq": 46, "elev": 1978, "dist": 6.4},
+  {"climb": "Rocacorba", "date": "5/23/26", "portal": "W", "time": "53:59", "watts": 217, "seq": 47, "elev": 2480, "dist": 7.4},
+  {"climb": "Montee du Chinaillon", "date": "5/29/26", "portal": "W", "time": "24:55", "watts": 246, "seq": 48, "elev": 1161, "dist": 5.0},
+  {"climb": "Norton Summit", "date": "6/2/26", "portal": "W", "time": "24:49", "watts": 256, "seq": 49, "elev": 1194, "dist": 5.4},
+  {"climb": "Col de Sarenne", "date": "6/6/26", "portal": "F", "time": "64:09", "watts": 218, "seq": 50, "elev": 3028, "dist": 8.0},
+  {"climb": "Alto de Patios", "date": "6/13/26", "portal": "F", "time": "23:01", "watts": 254, "seq": 51, "elev": 1237, "dist": 3.7},
+  {"climb": "Cote de Redoute", "date": "6/22/26", "portal": "W", "time": "7:08", "watts": 308, "seq": 52, "elev": 502, "dist": 1.0},
+  {"climb": "Col du Telegraph", "date": "6/27/26", "portal": "F", "time": "56:26", "watts": 226, "seq": 53, "elev": 2769, "dist": 7.4}
 ];
 
 const MAX_ELEV = Math.max(...CLIMBS.map(c => c.elev));
@@ -619,6 +623,7 @@ const RIDER_KG_OLD = 81.6;
 const RIDER_KG_NEW = 80.3;
 const WEIGHT_CHANGE_SEQ = 44; // seq 44+ uses new weight
 function riderKg(seq) { return seq >= WEIGHT_CHANGE_SEQ ? RIDER_KG_NEW : RIDER_KG_OLD; }
+function ftPerMile(elev, distKm) { return elev / (distKm / 1.60934); }
 const uniqueClimbs = [...new Set(CLIMBS.map(c => c.climb))].sort((a, b) => a.localeCompare(b));
 
 let selectedClimbs = new Set();
@@ -647,7 +652,7 @@ function renderSummary() {
     <div class="summary-stat"><span class="s-label">Total Climbs</span><span class="s-value">${total}</span></div>
     <div class="summary-stat"><span class="s-label">Unique Climbs</span><span class="s-value">${unique}</span></div>
     <div class="summary-stat"><span class="s-label">Total Elevation</span><span class="s-value">${totalElev.toLocaleString()}<span style="font-size:0.65rem;color:var(--text-dim)"> ft</span></span></div>
-    <div class="summary-stat"><span class="s-label">Total Distance</span><span class="s-value">${totalDist.toFixed(1)}<span style="font-size:0.65rem;color:var(--text-dim)"> km</span></span></div>
+    <div class="summary-stat"><span class="s-label">Total Distance</span><span class="s-value">${totalDist.toFixed(1)}<span style="font-size:0.65rem;color:var(--text-dim)"> mi</span></span></div>
   `;
 }
 renderSummary();
@@ -831,7 +836,7 @@ function renderStats() {
       <div class="elev-bar-wrap">
         <div class="bar-label">Elevation vs. Mt. Fuji (${MAX_ELEV.toLocaleString()} ft)</div>
         <div class="elev-bar"><div class="elev-bar-fill" style="width:${(first.elev / MAX_ELEV * 100).toFixed(1)}%"></div></div>
-        <div class="elev-bar-text"><span>${first.elev.toLocaleString()} ft / ${first.dist} km</span><span>${first.ft_mile.toFixed(0)} ft/mile</span></div>
+        <div class="elev-bar-text"><span>${first.elev.toLocaleString()} ft / ${first.dist} mi</span><span>${(first.elev / first.dist).toFixed(0)} ft/mile</span></div>
       </div>
 
       <div class="attempts-label">${attempts.length} Attempt${attempts.length > 1 ? 's' : ''}</div>`;
@@ -863,11 +868,11 @@ function renderStats() {
             </div>
             <div class="metric">
               <div class="metric-label">Distance</div>
-              <div class="metric-value dist">${a.dist}<span class="metric-unit">km</span></div>
+              <div class="metric-value dist">${a.dist}<span class="metric-unit">mi</span></div>
             </div>
             <div class="metric">
               <div class="metric-label">Ft/Mile</div>
-              <div class="metric-value grade">${a.ft_mile.toFixed(0)}</div>
+              <div class="metric-value grade">${(a.elev / a.dist).toFixed(0)}</div>
             </div>
           </div>
           <a class="strava-link" href="${stravaLink(a.date)}" target="_blank" rel="noopener">

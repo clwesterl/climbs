@@ -5,11 +5,12 @@ A self-contained web app for tracking completed Zwift climb portal rides. Select
 ## Features
 
 - **Multi-select searchable dropdown** — type to filter, check multiple climbs, keyboard navigable
-- **Per-climb stats** — time, watts, W/kg, elevation, distance for every attempt
+- **Per-climb stats** — time, watts, W/kg, elevation, distance, and ft/mile for every attempt
 - **PR tracking** — fastest attempt per climb flagged with ⚡ PR badge
 - **Strava integration** — each attempt links to your Strava training calendar for that date
 - **Elevation comparison** — visual bar comparing each climb against the highest logged (Mt. Fuji)
 - **Summary dashboard** — total climbs, unique climbs, cumulative elevation and distance
+- **Derived metrics** — W/kg and ft/mile are calculated in the app from watts, weight, elevation, and distance
 
 ## Usage
 
@@ -51,7 +52,14 @@ Source of truth is `climbs.dta` (Stata format). The climb records are embedded i
 | `watts` | number | Average watts |
 | `seq` | number | Chronological order of completion |
 | `elev` | number | Elevation gain (ft) |
-| `dist` | number | Distance (km) |
+| `dist` | number | Distance (miles) |
+
+### Derived Fields (calculated in app, not stored)
+
+| Field | Formula | Description |
+|-------|---------|-------------|
+| W/kg | `watts / riderKg(seq)` | Watts per kilogram, using split weight |
+| Ft/Mile | `elev / dist` | Vertical feet gained per mile |
 
 ## Configuration
 
